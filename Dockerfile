@@ -6,6 +6,7 @@ USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
+    gnupg \
     git \
     jq \
     unzip \
@@ -14,6 +15,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     bash \
   && rm -rf /var/lib/apt/lists/*
+
+# --- Install Node.js (required for BMAD CLI / npx; BMAD recommends Node 20+) ---
+# Uses NodeSource to get a current Node 20.x on Ubuntu.
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends nodejs \
+  && corepack enable \
+  && rm -rf /var/lib/apt/lists/*
+
+# --- Optional: install BMAD CLI globally (v6 alpha example) ---
+# Enable by building with: --build-arg INSTALL_BMAD_CLI=true
+# Pin the CLI version via:  --build-arg BMAD_CLI_VERSION=6.0.0-alpha.7
+ARG INSTALL_BMAD_CLI=false
+ARG BMAD_CLI_VERSION=6.0.0-alpha.7
+RUN if [ "$INSTALL_BMAD_CLI" = "true" ]; then \
+      npm install -g "bmad-method@${BMAD_CLI_VERSION}" \
+      && npm cache clean --force; \
+    fi
 
 # --- Install mise (runtime manager) ---
 RUN curl -fsSL https://mise.run | sh \
