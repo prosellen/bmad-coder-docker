@@ -57,4 +57,5 @@ COPY bmad/stacks/ /opt/bmad/stacks/
 RUN chmod -R a+rX /opt/bmad/stacks
 
 USER coder
+RUN mkdir -p /home/coder/project
 WORKDIR /home/coder
