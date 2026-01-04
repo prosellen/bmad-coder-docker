@@ -14,15 +14,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     build-essential \
     bash \
+    nodejs \
+    npm \
   && rm -rf /var/lib/apt/lists/*
 
-# --- Install Node.js (required for BMAD CLI / npx; BMAD recommends Node 20+) ---
-# Uses NodeSource to get a current Node 20.x on Ubuntu.
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends nodejs \
-  && corepack enable \
-  && rm -rf /var/lib/apt/lists/*
+# # --- Install Node.js (required for BMAD CLI / npx; BMAD recommends Node 20+) ---
+# # Uses NodeSource to get a current Node 20.x on Ubuntu.
+# RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+#   && apt-get update \
+#   && apt-get install -y --no-install-recommends nodejs \
+#   && corepack enable \
+#   && rm -rf /var/lib/apt/lists/*
 
 # --- Optional: install BMAD CLI globally (v6 alpha example) ---
 # Enable by building with: --build-arg INSTALL_BMAD_CLI=true
@@ -35,9 +37,11 @@ RUN if [ "$INSTALL_BMAD_CLI" = "true" ]; then \
     fi
 
 # --- Install mise (runtime manager) ---
-RUN curl -fsSL https://mise.run | sh \
-  && install -m 0755 /root/.local/bin/mise /usr/local/bin/mise \
-  && rm -rf /root/.local
+RUN install -dm 755 /etc/apt/keyrings \
+  && curl -fSs https://mise.jdx.dev/gpg-key.pub | sudo tee /etc/apt/keyrings/mise-archive-keyring.pub 1> /dev/null \
+  && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.pub arch=amd64] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list \
+  && apt-get update \
+  && apt-get install -y mise
 
 # Shell activation for terminals
 RUN echo '\n# mise (runtime manager)\nif command -v mise >/dev/null 2>&1; then eval "$(mise activate bash)"; fi\n' >> /etc/bash.bashrc
