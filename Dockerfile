@@ -42,7 +42,7 @@ RUN echo '' >> /etc/bash.bashrc \
 # Enable by building with: --build-arg INSTALL_BMAD_CLI=true
 # Pin the CLI version via:  --build-arg BMAD_CLI_VERSION=6.0.0-alpha.15
 ARG INSTALL_BMAD_CLI=false
-ARG BMAD_CLI_VERSION=6.0.0-alpha.7
+ARG BMAD_CLI_VERSION=6.0.0-alpha.15
 RUN if [ "$INSTALL_BMAD_CLI" = "true" ]; then \
       npm install -g "bmad-method@${BMAD_CLI_VERSION}" \
       && npm cache clean --force; \
