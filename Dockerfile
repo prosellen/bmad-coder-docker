@@ -14,21 +14,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     build-essential \
     bash \
-    nodejs \
-    npm \
   && rm -rf /var/lib/apt/lists/*
 
 # # --- Install Node.js (required for BMAD CLI / npx; BMAD recommends Node 20+) ---
-# # Uses NodeSource to get a current Node 20.x on Ubuntu.
-# RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+# # Uses NodeSource to get a current Node 22.x on Ubuntu.
+# RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 #   && apt-get update \
 #   && apt-get install -y --no-install-recommends nodejs \
 #   && corepack enable \
 #   && rm -rf /var/lib/apt/lists/*
 
+# --- Install Node.js (required for BMAD CLI / npx; BMAD recommends Node 20+) ---
+# Use nvm to install Node.js so we can more easily switch versions later if needed.
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
+  && . "$HOME/.nvm/nvm.sh" \
+  && nvm install 24 \
+  && nvm alias default 24 \
+  && nvm use default
+
 # --- Optional: install BMAD CLI globally (v6 alpha example) ---
 # Enable by building with: --build-arg INSTALL_BMAD_CLI=true
-# Pin the CLI version via:  --build-arg BMAD_CLI_VERSION=6.0.0-alpha.7
+# Pin the CLI version via:  --build-arg BMAD_CLI_VERSION=6.0.0-alpha.15
 ARG INSTALL_BMAD_CLI=false
 ARG BMAD_CLI_VERSION=6.0.0-alpha.7
 RUN if [ "$INSTALL_BMAD_CLI" = "true" ]; then \
