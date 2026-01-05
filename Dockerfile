@@ -1,15 +1,14 @@
 # syntax=docker/dockerfile:1
 FROM codercom/enterprise-base:ubuntu
 
+USER root
+
 # --- Build arguments ---
 ARG NODE_VERSION=24
-# ARG INSTALL_BMAD_CLI=true
-# ARG BMAD_CLI_VERSION=latest
+ARG PROJECT_DIR=/home/coder/project
 
 # Use bash for the shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -30,31 +29,23 @@ RUN install -dm 755 /etc/apt/keyrings \
   && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.pub arch=amd64] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list \
   && apt-get update \
   && apt-get install -y mise
+# Configure mise for all users (bash)
+RUN echo 'eval "$(/usr/bin/mise activate bash)"' >> /etc/bash.bashrc
+RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_profile
+
+# --- Install NodeJS with the selected version via mise ---
+RUN mise install "nodejs@${NODE_VERSION}" \
+  && mise use "nodejs@${NODE_VERSION}" --global
 
 # --- BMAD stack tooling (copied in) ---
 ENV BMAD_STACK_DIR=/opt/bmad/stacks
 
-COPY bmad/bin/bmad-stack /home/coder/.local/bin/bmad-stack
-RUN chmod 0755 /home/coder/.local/bin/bmad-stack \
- && sed -i 's/\r$//' /home/coder/.local/bin/bmad-stack
+COPY bmad/bin/bmad-stack /usr/local/bin/bmad-stack
+RUN chmod 0755 /usr/local/bin/bmad-stack \
+ && sed -i 's/\r$//' /usr/local/bin/bmad-stack
 
 COPY bmad/stacks/ /opt/bmad/stacks/
 RUN chmod -R a+rX /opt/bmad/stacks
-
-USER coder
-
-# --- Install Node.js (required for BMAD CLI / npx; BMAD recommends Node 20+) ---
-# Use nvm to install Node.js so we can more easily switch versions later if needed.
-ENV NVM_DIR=/home/coder/.local/bin/.nvm
-RUN mkdir -p $NVM_DIR
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-RUN echo node > /home/coder/.nvmrc
-RUN bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION"
-
-ENV PROJECT_DIR=/home/coder/project
-RUN mkdir -p ${PROJECT_DIR}
-RUN mkdir -p /home/coder/.yolocacher
-WORKDIR ${PROJECT_DIR}
 
 # # --- Optional: install BMAD CLI globally (v6 alpha example) ---
 # # Enable by building with: --build-arg INSTALL_BMAD_CLI=true
@@ -66,4 +57,6 @@ WORKDIR ${PROJECT_DIR}
 #     && npm cache clean --force; \
 #   fi
 
+USER coder
 CMD ["/bin/bash"]
+WORKDIR /home/coder
