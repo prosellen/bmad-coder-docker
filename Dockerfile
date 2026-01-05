@@ -33,29 +33,25 @@ RUN install -dm 755 /etc/apt/keyrings \
 RUN echo 'eval "$(/usr/bin/mise activate bash)"' >> /etc/bash.bashrc
 RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_profile
 
-# --- Install NodeJS with the selected version via mise ---
-RUN mise install "nodejs@${NODE_VERSION}" \
-  && mise use "nodejs@${NODE_VERSION}" --global
+# # --- Install NodeJS with the selected version via mise ---
+# RUN mise install "nodejs@${NODE_VERSION}" \
+#   && mise use "nodejs@${NODE_VERSION}" --global
 
 # --- BMAD stack tooling (copied in) ---
 ENV BMAD_STACK_DIR=/opt/bmad/stacks
 
+# Copies the bmad-stack script and makes it executable
 COPY bmad/bin/bmad-stack /usr/local/bin/bmad-stack
 RUN chmod 0755 /usr/local/bin/bmad-stack \
  && sed -i 's/\r$//' /usr/local/bin/bmad-stack
 
+# Copies the BMAD Stack definitions
 COPY bmad/stacks/ /opt/bmad/stacks/
 RUN chmod -R a+rX /opt/bmad/stacks
 
-# # --- Optional: install BMAD CLI globally (v6 alpha example) ---
-# # Enable by building with: --build-arg INSTALL_BMAD_CLI=true
-# # Pin the CLI version via:  --build-arg BMAD_CLI_VERSION=6.0.0-alpha.15
-# RUN if [ "$INSTALL_BMAD_CLI" = "true" ]; then \
-#     source $NVM_DIR/nvm.sh \
-#     && npm install -g "bmad-method@${BMAD_CLI_VERSION}" \
-#     && bmad install --full --ide vscode --directory .\
-#     && npm cache clean --force; \
-#   fi
+# Copies the main BMAD files so we do not have to npm install them each time
+COPY bmad/bmad-files/ /opt/bmad/bmad-files/
+RUN chmod -R a+rX /opt/bmad/bmad-files
 
 USER coder
 CMD ["/bin/bash"]
