@@ -25,14 +25,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 # --- Install mise (runtime manager) ---
-RUN install -dm 755 /etc/apt/keyrings \
-  && curl -fSs https://mise.jdx.dev/gpg-key.pub | sudo tee /etc/apt/keyrings/mise-archive-keyring.pub 1> /dev/null \
-  && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.pub arch=amd64] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list \
-  && apt-get update \
-  && apt-get install -y mise
-# Configure mise for all users (bash)
-RUN echo 'eval "$(/usr/bin/mise activate bash)"' >> /etc/bash.bashrc
-RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_profile
+# RUN install -dm 755 /etc/apt/keyrings \
+#   && curl -fSs https://mise.jdx.dev/gpg-key.pub | sudo tee /etc/apt/keyrings/mise-archive-keyring.pub 1> /dev/null \
+#   && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.pub arch=amd64] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list \
+#   && apt-get update \
+#   && apt-get install -y mise
+# # Configure mise for all users (bash)
+# RUN echo 'eval "$(/usr/bin/mise activate bash)"' >> /etc/bash.bashrc
+# RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_profile
 
 # # --- Install NodeJS with the selected version via mise ---
 # RUN mise install "nodejs@${NODE_VERSION}" \
