@@ -30,9 +30,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #   && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.pub arch=amd64] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list \
 #   && apt-get update \
 #   && apt-get install -y mise
+
+# Install mise via the install script
+RUN curl https://mise.run | MISE_INSTALL_PATH=/usr/bin/mise sh
+
 # # Configure mise for all users (bash)
-# RUN echo 'eval "$(/usr/bin/mise activate bash)"' >> /etc/bash.bashrc
-# RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_profile
+RUN echo 'eval "$(/usr/bin/mise activate bash)"' >> /etc/bash.bashrc
+RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_profile
 
 # # --- Install NodeJS with the selected version via mise ---
 # RUN mise install "nodejs@${NODE_VERSION}" \
