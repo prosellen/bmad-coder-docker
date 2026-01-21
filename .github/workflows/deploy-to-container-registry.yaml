@@ -61,11 +61,11 @@ jobs:
 
       # - name: 'Build Docker Image'
       #   run: |
-      #     docker build . --platform linux/amd64,linux/arm64 --tag ghcr.io/prosellen/bmad-coder-docker:latest
+      #     docker build . --platform linux/amd64,linux/arm64 --tag ghcr.io/bmad-method-test-project/bmad-coder-docker:latest
       
       # - name: 'Push Docker Image to GHCR'
       #   run: |
-      #     docker push ghcr.io/prosellen/bmad-coder-docker:latest
+      #     docker push ghcr.io/bmad-method-test-project/bmad-coder-docker:latest
 
       # This allows you to build for ARM on an AMD64 runner
       - name: Set up QEMU
@@ -82,5 +82,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/prosellen/bmad-coder-docker:latest
-            ghcr.io/prosellen/bmad-coder-docker:${{ steps.image_tag.outputs.tag }}        
+            ghcr.io/bmad-method-test-project/bmad-coder-docker:latest
+            ghcr.io/bmad-method-test-project/bmad-coder-docker:${{ steps.image_tag.outputs.tag }}        
