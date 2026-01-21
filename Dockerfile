@@ -38,6 +38,15 @@ RUN curl https://mise.run | MISE_INSTALL_PATH=/usr/bin/mise sh
 RUN echo 'eval "$(/usr/bin/mise activate bash)"' >> /etc/bash.bashrc
 RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_profile
 
+# Copy in the mise.toml that defines the runtimes to be installed
+COPY confg/mise.toml ./mise.toml
+# Install all runtimes defined in the mise.toml
+RUN mise install --all
+# Put it outside the users home, since that will be a volume mount in Coder
+RUN mkdir -p /usr/local/config/
+COPY ./mise.toml /usr/local/config/mise.toml
+
+
 # # --- Install NodeJS with the selected version via mise ---
 # RUN mise install "nodejs@${NODE_VERSION}" \
 #   && mise use "nodejs@${NODE_VERSION}" --global
