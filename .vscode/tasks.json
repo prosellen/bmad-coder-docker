@@ -16,7 +16,6 @@
             "command": "docker run -it ghcr.io/prosellen/bmad-coder-docker:latest",
             "isBackground": false,
             "problemMatcher": []
-        }
         },
         {
             "label": "Docker Temporary Build & Run (test)",
