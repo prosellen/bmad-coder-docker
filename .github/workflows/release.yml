@@ -37,5 +37,12 @@ jobs:
 
       - name: Run semantic-release
         uses: cycjimmy/semantic-release-action@v6
+        # This list tells the ACTION to install these modules
+          extra_plugins: |
+            @semantic-release/exec
+            @semantic-release/git
+            @semantic-release/commit-analyzer
+            @semantic-release/release-notes-generator
+            conventional-changelog-conventionalcommits
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
