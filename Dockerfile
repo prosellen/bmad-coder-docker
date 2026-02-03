@@ -1,16 +1,21 @@
 # syntax=docker/dockerfile:1
-FROM codercom/enterprise-base:ubuntu
-
-USER root
+FROM ubuntu:latest
 
 # --- Build arguments ---
 ARG NODE_VERSION=24
 ARG PROJECT_DIR=/home/coder/project
+ARG USER=coder
 
 # Use bash for the shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+
+# --- Initial setup ---
+
+# Install base dependencies
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+    sudo \
     ca-certificates \
     curl \
     gnupg \
@@ -21,47 +26,61 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     build-essential \
     bash \
-    locales \
-  && rm -rf /var/lib/apt/lists/*
+    rsync \
+    locales
+RUN rm -rf /var/lib/apt/lists/*
 
-# --- Install mise (runtime manager) ---
-# RUN install -dm 755 /etc/apt/keyrings \
-#   && curl -fSs https://mise.jdx.dev/gpg-key.pub | sudo tee /etc/apt/keyrings/mise-archive-keyring.pub 1> /dev/null \
-#   && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.pub arch=amd64] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list \
-#   && apt-get update \
-#   && apt-get install -y mise
 
+WORKDIR "/root/"
+
+# --- Create configuration directory ---
+# We are going to add the full user home directory to the Kubernetes PVC
+# This will shadow everything that is in the user directory, making everything that is
+# stored in there "invisible".
+# As a workaround, we store everything that will be needed in that PVC in this config
+# directory and move it into the users home directory AFTER the PVC is created
+RUN mkdir -p /usr/local/config/
+
+# --- Install mise (https://mise.run) to enable easy runtime installation ---
 # Install mise via the install script
 RUN curl https://mise.run | MISE_INSTALL_PATH=/usr/bin/mise sh
-
-# # Configure mise for all users (bash)
+# Configure mise for all users (bash)
 RUN echo 'eval "$(/usr/bin/mise activate bash)"' >> /etc/bash.bashrc
 RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_profile
 
-# # --- Install NodeJS with the selected version via mise ---
-# RUN mise install "nodejs@${NODE_VERSION}" \
-#   && mise use "nodejs@${NODE_VERSION}" --global
+# --- Copy in BMAD files to the config directory ---
+# We copy the BMAD stack tooling and files into the config directory so they can be
+# moved into the user's home directory after the PVC is mounted
+COPY config/bmad-files/ /usr/local/config/project/
+RUN chmod -R a+rX /usr/local/config/project/ 
 
-# --- BMAD stack tooling (copied in) ---
-ENV BMAD_STACK_DIR=/opt/bmad/stacks
+# # Copy the script to install new tools using mise
+# COPY config/bin/ /usr/local/config/.local/bin/
+# RUN chmod 0755 /usr/local/config/.local/bin \
+#  && sed -i 's/\r$//' /usr/local/config/.local/bin
 
-# Copies the bmad-stack script and makes it executable
-COPY bmad/bin/bmad-stack /usr/local/bin/bmad-stack
-RUN chmod 0755 /usr/local/bin/bmad-stack \
- && sed -i 's/\r$//' /usr/local/bin/bmad-stack
+# # Copy the script to install new tools using mise
+# COPY config/stacks/ /usr/local/config/.local/stacks/
+# RUN chmod -R a+rX /usr/local/config/.local/stacks/
 
-# Copies the BMAD Stack definitions
-COPY bmad/stacks/ /opt/bmad/stacks/
-RUN chmod -R a+rX /opt/bmad/stacks
-
-# Copies the main BMAD files so we do not have to npm install them each time
-COPY bmad/bmad-files/ /opt/bmad/bmad-files/
-RUN chmod -R a+rX /opt/bmad/bmad-files
-
-# Set locale to German (de_DE.UTF-8)
+# --- Locale setup ---
+# # Set locale to German (de_DE.UTF-8)
 RUN locale-gen de_DE.UTF-8 \
   && update-locale LANG=de_DE.UTF-8   
+ENV LANG=de_DE.UTF-8
+ENV LANGUAGE=de_DE.UTF-8
+ENV LC_ALL=de_DE.UTF-8  
 
-USER coder
-CMD ["/bin/bash"]
-WORKDIR /home/coder
+RUN useradd -m --shell /bin/bash -G sudo ${USER} 
+RUN echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER} \
+    && chmod 440 /etc/sudoers.d/${USER} \
+    && mkdir -p /home/${USER}/project \
+    && chown -R ${USER}:${USER} /home/${USER}/project
+
+# # Let's add a fancy prompt!
+# # RUN echo "PS1='CGI BMAD \[\033[1;36m\]\h \[\033[1;34m\]\W\[\033[0;35m\] \[\033[1;36m\]# \[\033[0m\]'" > /home/${USER}/.bashrc && \
+# #     chown ${USER}:${USER} /home/${USER}/.bashrc
+
+USER ${USER}
+
+WORKDIR "/home/${USER}"

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STACK_ROOT="${BMAD_STACK_DIR:-/opt/bmad/stacks}"
-EXT_DIR="${CODE_SERVER_EXTENSIONS_DIR:-/opt/code-server/extensions}"
+STACK_ROOT="${BMAD_STACK_DIR:-~/.local/stacks}"
+EXT_DIR="${CODE_SERVER_EXTENSIONS_DIR:-~/.vscode-web/extensions}"
 
 usage() {
   echo "Usage:"
