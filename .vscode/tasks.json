@@ -17,5 +17,13 @@
             "isBackground": false,
             "problemMatcher": []
         }
+        },
+        {
+            "label": "Docker Temporary Build & Run (test)",
+            "type": "shell",
+            "command": "docker run --rm -it $(docker build -q .)",
+            "isBackground": false,
+            "problemMatcher": []
+        }
     ]
 }
