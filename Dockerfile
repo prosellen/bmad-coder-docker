@@ -9,9 +9,7 @@ ARG USER=coder
 # Use bash for the shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-
 # --- Initial setup ---
-
 # Install base dependencies
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
@@ -29,7 +27,6 @@ RUN apt-get install -y --no-install-recommends \
     rsync \
     locales
 RUN rm -rf /var/lib/apt/lists/*
-
 
 WORKDIR "/root/"
 
@@ -71,15 +68,15 @@ ENV LANG=de_DE.UTF-8
 ENV LANGUAGE=de_DE.UTF-8
 ENV LC_ALL=de_DE.UTF-8  
 
-RUN useradd -m --shell /bin/bash -G sudo ${USER} 
+RUN useradd -m --uid=1001 --shell /bin/bash -G sudo ${USER} 
 RUN echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER} \
     && chmod 440 /etc/sudoers.d/${USER} \
     && mkdir -p /home/${USER}/project \
     && chown -R ${USER}:${USER} /home/${USER}/project
 
 # # Let's add a fancy prompt!
-# # RUN echo "PS1='CGI BMAD \[\033[1;36m\]\h \[\033[1;34m\]\W\[\033[0;35m\] \[\033[1;36m\]# \[\033[0m\]'" > /home/${USER}/.bashrc && \
-# #     chown ${USER}:${USER} /home/${USER}/.bashrc
+# RUN echo "PS1='CGI BMAD \[\033[1;36m\]\h \[\033[1;34m\]\W\[\033[0;35m\] \[\033[1;36m\]# \[\033[0m\]'" > /home/${USER}/.bashrc && \
+#     chown ${USER}:${USER} /home/${USER}/.bashrc
 
 USER ${USER}
 
