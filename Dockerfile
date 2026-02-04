@@ -71,16 +71,21 @@ ENV LANG=de_DE.UTF-8
 ENV LANGUAGE=de_DE.UTF-8
 ENV LC_ALL=de_DE.UTF-8  
 
+# --- Create local user (default: "coder") ---
 RUN useradd -m --shell /bin/bash -G sudo ${USER} 
 RUN echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER} \
-    && chmod 440 /etc/sudoers.d/${USER} \
-    && mkdir -p /home/${USER}/project \
-    && chown -R ${USER}:${USER} /home/${USER}/project
+    && chmod 440 /etc/sudoers.d/${USER}
+# Create project directory for the user
+RUN mkdir -p /home/${USER}/project
+# Set ownership of home directory to the user
+RUN chown -R ${USER}:${USER} /home/${USER}
 
 # # Let's add a fancy prompt!
 # # RUN echo "PS1='CGI BMAD \[\033[1;36m\]\h \[\033[1;34m\]\W\[\033[0;35m\] \[\033[1;36m\]# \[\033[0m\]'" > /home/${USER}/.bashrc && \
 # #     chown ${USER}:${USER} /home/${USER}/.bashrc
 
+# Switch to the new user
 USER ${USER}
 
+# Set working directory
 WORKDIR "/home/${USER}"
