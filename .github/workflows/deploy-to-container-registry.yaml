@@ -1,18 +1,19 @@
 name: Deploy Images to GHCR
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '.vscode/**'
-      - '**/*.md'
-      - '.github/workflows/**'
+  # # This is un 
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - '.vscode/**'
+  #     - '**/*.md'
+  #     - '.github/workflows/**'
   release:
     types: [published]
-  workflow_run:
-    workflows: ["Release"]
-    types: [completed]
+  # workflow_run:
+  #   workflows: ["Release"]
+  #   types: [completed]
   workflow_dispatch:
 
 jobs:
