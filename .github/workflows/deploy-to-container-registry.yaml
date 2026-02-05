@@ -1,18 +1,19 @@
 name: Deploy Images to GHCR
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '.vscode/**'
-      - '**/*.md'
-      - '.github/workflows/**'
+  # # This is un 
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - '.vscode/**'
+  #     - '**/*.md'
+  #     - '.github/workflows/**'
   release:
     types: [published]
-  workflow_run:
-    workflows: ["Release"]
-    types: [completed]
+  # workflow_run:
+  #   workflows: ["Release"]
+  #   types: [completed]
   workflow_dispatch:
 
 jobs:
@@ -21,8 +22,6 @@ jobs:
     permissions:
       packages: write
       contents: read
-    # Only run on successful Release workflow when triggered by workflow_run
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     defaults:
       run:
         working-directory: '.'
@@ -31,11 +30,8 @@ jobs:
         uses: actions/checkout@main
         with:
           fetch-depth: 0
-          # Use the exact source for each event type
-          # - release: checkout the release tag
-          # - push: checkout main
-          # - workflow_run: checkout the head_sha from the Release workflow
-          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || (github.event_name == 'push' && 'main' || github.event.workflow_run.head_sha) }}
+          # For release events, checkout the release tag; for workflow_dispatch, use the default branch
+          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || '' }}
 
       - name: Determine image tag
         id: image_tag
@@ -44,11 +40,6 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "release" ] && [ -n "${{ github.event.release.tag_name }}" ]; then
             TAG="${{ github.event.release.tag_name }}"
-          elif [ "${{ github.event_name }}" = "workflow_run" ]; then
-            # Fetch latest release tag from GitHub API
-            TAG=$(curl -s -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-              -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/latest" | jq -r '.tag_name // "latest"')
           else
             TAG="latest"
           fi
