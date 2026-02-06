@@ -5,6 +5,7 @@ FROM ubuntu:latest
 ARG NODE_VERSION=24
 ARG PROJECT_DIR=/home/coder/project
 ARG USER=coder
+ARG BMAD_VERSION=6
 
 # Use bash for the shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -55,8 +56,16 @@ RUN echo 'eval "$(/usr/bin/mise activate bash  --shims)"' >> /etc/bash.bash_prof
 # --- Copy in BMAD files to the config directory ---
 # We copy the BMAD stack tooling and files into the config directory so they can be
 # moved into the user's home directory after the PVC is mounted
-COPY config/bmad-files/ /usr/local/config/project/
-RUN chmod -R a+rX /usr/local/config/project/ 
+# Select BMAD version based on build arg: v4.44.3 or v6.0.0-Beta.7
+COPY bmad/v${BMAD_VERSION}.*/ /usr/local/config/project/
+RUN chmod -R a+rX /usr/local/config/project/
+
+# --- Copy templating scripts and templates ---
+COPY config/scripts/ /usr/local/config/scripts/
+RUN chmod +x /usr/local/config/scripts/*.py
+
+COPY config/templates/ /usr/local/config/templates/
+RUN chmod -R a+rX /usr/local/config/templates/ 
 
 # # Copy the script to install new tools using mise
 # COPY config/bin/ /usr/local/config/.local/bin/

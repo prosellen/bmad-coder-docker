@@ -1,0 +1,150 @@
+# AI Agent Instructions for BMAD Workspace
+
+This workspace uses the **BMAD Method v6** (Build, Measure, Analyze, Design) to guide software development projects.
+
+## Project Context
+
+### Target Maturity Level
+
+{% if target_maturity_level == 1 -%}
+**Level 1: Concept Demo**
+
+This project is a proof-of-concept or demo intended to validate ideas and explore feasibility. Focus on:
+- Quick iterations and experimentation
+- Core functionality demonstrations
+- Minimal documentation (just enough to understand the concept)
+- Informal code structure acceptable
+- No production-readiness requirements
+{% elif target_maturity_level == 2 -%}
+**Level 2: Working Prototype**
+
+This project is a functional prototype to validate technical approaches. Focus on:
+- Working end-to-end functionality
+- Basic error handling
+- Moderate code quality and structure
+- Essential documentation for handoff
+- Some testing of critical paths
+- Not yet production-ready but demonstrates viability
+{% elif target_maturity_level == 3 -%}
+**Level 3: Releasable Solution**
+
+This project aims to be production-ready for initial release. Focus on:
+- Complete feature implementation
+- Comprehensive error handling
+- Good code quality, maintainability, and structure
+- Full documentation (technical and user)
+- Thorough testing (unit, integration, e2e)
+- Security considerations addressed
+- Deployment readiness
+{% else -%}
+**Level 4: Enterprise-Ready**
+
+This project must meet enterprise standards for production deployment. Focus on:
+- Production-grade implementation
+- Robust error handling and recovery
+- Excellent code quality with architectural patterns
+- Complete documentation suite (technical, operational, user)
+- Comprehensive test coverage with automated testing
+- Security hardening and compliance
+- Monitoring, logging, and observability
+- Scalability and performance optimization
+- Disaster recovery and high availability
+{% endif %}
+
+## BMAD v6 Architecture
+
+### Module Structure
+
+BMAD v6 uses a modular architecture with:
+- **Core Module**: Base functionality and configuration
+- **BMM Module**: BMAD Method Module with agents, workflows, and development guidance
+- **Configuration**: See `_bmad/core/config.yaml` and `_bmad/bmm/config.yaml` for settings
+
+### Available Agents
+
+The BMM module provides specialized agents for different development roles:
+- **BMAD Master**: Orchestrates the overall BMAD process
+- **Developer**: Implements features and writes code
+- **Architect**: Designs system architecture and technical solutions
+- **Business Analyst**: Gathers and documents requirements
+- **Product Manager**: Defines product vision and priorities
+- **QA Engineer**: Tests and validates quality
+- **DevOps Engineer**: Manages deployment and infrastructure
+- **Data Specialist**: Handles data architecture and management
+- **UX/UI Designer**: Designs user interfaces and experiences
+
+See `_bmad/bmm/agents/` for detailed agent definitions.
+
+### Workflows
+
+Development workflows are organized by project phase:
+- **Phase 1**: Analysis and discovery
+- **Phase 2**: Planning and design
+- **Phase 3**: Implementation
+- **Phase 4**: Validation and release
+- **Phase 5**: Operations and maintenance
+
+See `_bmad/bmm/workflows/` for workflow definitions.
+
+## Configuration
+
+Your workspace is configured with the following settings (managed in config files):
+
+- **User Name**: Configured in `_bmad/core/config.yaml`
+- **Communication Language**: Configured in `_bmad/core/config.yaml`
+- **Document Output Language**: Configured in `_bmad/core/config.yaml`
+- **Project Name**: Configured in `_bmad/bmm/config.yaml`
+- **User Skill Level**: Configured in `_bmad/bmm/config.yaml`
+
+These configuration files are automatically updated when workspace parameters change.
+
+## Guidelines for AI Assistance
+
+### Communication Style
+
+Adapt your communication based on the user's skill level (configured in BMM config):
+- **No skills**: Explain concepts in plain language, avoid jargon
+- **Beginner**: Use common terms but explain advanced concepts
+- **Intermediate**: Use technical terminology freely, focus on design decisions
+- **Advanced**: Use precise technical language, discuss architecture and optimizations
+
+### Code Quality Expectations
+
+{% if target_maturity_level == 1 -%}
+- Prioritize speed and functionality over perfect structure
+- Basic comments for non-obvious code
+- Manual testing is acceptable
+{% elif target_maturity_level == 2 -%}
+- Follow basic best practices and patterns
+- Document key decisions and approaches
+- Include basic unit tests for core functionality
+{% elif target_maturity_level == 3 -%}
+- Apply SOLID principles and design patterns
+- Comprehensive documentation and tests
+- Code reviews and quality checks required
+{% else -%}
+- Enterprise-grade code with full documentation
+- Comprehensive test suites (unit, integration, e2e)
+- Performance profiling and optimization
+- Security auditing and compliance validation
+{% endif %}
+
+### Best Practices
+
+1. **Context First**: Review agent definitions and workflows before making suggestions
+2. **Consistency**: Follow established patterns in the codebase
+3. **Documentation**: Update docs in `_bmad-output/` when making significant changes
+4. **Testing**: {% if target_maturity_level >= 3 %}Include tests with all new features{% elif target_maturity_level == 2 %}Add tests for critical paths{% else %}Test manually as needed{% endif %}
+5. **Module Configuration**: Respect settings in `_bmad/*/config.yaml` files
+6. **Quality**: Align code quality with the target maturity level
+
+## Output Artifacts
+
+BMAD v6 organizes outputs in:
+- **Planning Artifacts**: `_bmad-output/planning-artifacts/`
+- **Implementation Artifacts**: `_bmad-output/implementation-artifacts/`
+- **Project Knowledge**: `docs/`
+
+---
+
+*This file is automatically generated based on workspace parameters. Sections may be updated when workspace settings change.*

@@ -69,12 +69,26 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push
+      - name: Build and push v4 image
         uses: docker/build-push-action@v5
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          build-args: |
+            BMAD_VERSION=4
           tags: |
-            ghcr.io/bmad-method-test-project/bmad-coder-docker:latest
-            ghcr.io/bmad-method-test-project/bmad-coder-docker:${{ steps.image_tag.outputs.tag }}        
+            ghcr.io/bmad-method-test-project/bmad-coder-docker-v4:latest
+            ghcr.io/bmad-method-test-project/bmad-coder-docker-v4:${{ steps.image_tag.outputs.tag }}
+
+      - name: Build and push v6 image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            BMAD_VERSION=6
+          tags: |
+            ghcr.io/bmad-method-test-project/bmad-coder-docker-v6:latest
+            ghcr.io/bmad-method-test-project/bmad-coder-docker-v6:${{ steps.image_tag.outputs.tag }}        

@@ -1,0 +1,169 @@
+# AI Agent Instructions for BMAD Workspace
+
+This workspace uses the **BMAD Method v4** (Build, Measure, Analyze, Design) to guide software development projects.
+
+## Project Context
+
+### Target Maturity Level
+
+{% if target_maturity_level == 1 -%}
+**Level 1: Concept Demo**
+
+This project is a proof-of-concept or demo intended to validate ideas and explore feasibility. Focus on:
+- Quick iterations and experimentation
+- Core functionality demonstrations
+- Minimal documentation (just enough to understand the concept)
+- Informal code structure acceptable
+- No production-readiness requirements
+{% elif target_maturity_level == 2 -%}
+**Level 2: Working Prototype**
+
+This project is a functional prototype to validate technical approaches. Focus on:
+- Working end-to-end functionality
+- Basic error handling
+- Moderate code quality and structure
+- Essential documentation for handoff
+- Some testing of critical paths
+- Not yet production-ready but demonstrates viability
+{% elif target_maturity_level == 3 -%}
+**Level 3: Releasable Solution**
+
+This project aims to be production-ready for initial release. Focus on:
+- Complete feature implementation
+- Comprehensive error handling
+- Good code quality, maintainability, and structure
+- Full documentation (technical and user)
+- Thorough testing (unit, integration, e2e)
+- Security considerations addressed
+- Deployment readiness
+{% else -%}
+**Level 4: Enterprise-Ready**
+
+This project must meet enterprise standards for production deployment. Focus on:
+- Production-grade implementation
+- Robust error handling and recovery
+- Excellent code quality with architectural patterns
+- Complete documentation suite (technical, operational, user)
+- Comprehensive test coverage with automated testing
+- Security hardening and compliance
+- Monitoring, logging, and observability
+- Scalability and performance optimization
+- Disaster recovery and high availability
+{% endif %}
+
+### User Technical Proficiency
+
+{% if user_technical_proficiency == 1 -%}
+**No Technical Software Development Skills**
+
+The user has no software development experience. When interacting:
+- Avoid technical jargon; explain concepts in plain language
+- Provide step-by-step instructions for any actions
+- Explain *what* you're doing and *why* in simple terms
+- Offer to explain technical concepts when they arise
+- Focus on outcomes and business value rather than implementation details
+- Provide visual aids or analogies where helpful
+{% elif user_technical_proficiency == 2 -%}
+**Beginner Level**
+
+The user has basic software development knowledge but limited practical experience. When interacting:
+- Use common technical terms but explain advanced concepts
+- Provide context for decisions and approaches
+- Offer learning opportunities and explain best practices
+- Be patient with questions about fundamentals
+- Suggest resources for deeper understanding when relevant
+- Balance explanation with implementation
+{% elif user_technical_proficiency == 3 -%}
+**Intermediate Level**
+
+The user has solid software development experience and understands common patterns. When interacting:
+- Use technical terminology freely
+- Focus on design decisions and trade-offs
+- Provide rationale for non-obvious choices
+- Assume familiarity with standard tools and practices
+- Engage in technical discussions
+- Suggest optimizations and improvements
+{% else -%}
+**Advanced Level**
+
+The user is an experienced developer with deep technical knowledge. When interacting:
+- Use precise technical language and domain terminology
+- Discuss architectural patterns, trade-offs, and optimization strategies
+- Focus on nuances, edge cases, and advanced considerations
+- Assume strong understanding of best practices
+- Engage in high-level technical discussions
+- Provide detailed technical rationale for complex decisions
+{% endif %}
+
+## BMAD v4 Configuration
+
+### Document Structure
+
+The project uses the following document structure:
+- **PRD (Product Requirements)**: `docs/prd.md` (sharded in `docs/prd/`)
+- **Architecture**: `docs/architecture.md` (sharded in `docs/architecture/`)
+- **QA Documents**: `docs/qa/`
+- **User Stories**: `docs/stories/`
+- **Debug Log**: `.ai/debug-log.md`
+
+### Key Development Files
+
+Always load these files when working on development tasks:
+- `docs/architecture/coding-standards.md` - Coding conventions and standards
+- `docs/architecture/tech-stack.md` - Technology choices and rationale
+- `docs/architecture/source-tree.md` - Project structure and organization
+
+### BMAD v4 Features
+
+- **Markdown Exploder**: Enabled - supports sharded documentation
+- **PRD Version**: v4 with sharding support
+- **Architecture Version**: v4 with sharding support
+- **Slash Command Prefix**: Use `BMad` for BMAD-specific commands
+
+## Working with AI Agents
+
+### Communication Style
+
+{% if user_technical_proficiency <= 2 -%}
+- Keep explanations clear and educational
+- Break down complex tasks into smaller steps
+- Confirm understanding before proceeding with implementation
+{% else -%}
+- Provide concise, technically accurate responses
+- Focus on delivering value efficiently
+- Ask clarifying questions for ambiguous requirements
+{% endif %}
+
+### Code Quality Expectations
+
+{% if target_maturity_level == 1 -%}
+- Prioritize speed and functionality over perfect structure
+- Basic comments for non-obvious code
+- Manual testing is acceptable
+{% elif target_maturity_level == 2 -%}
+- Follow basic best practices and patterns
+- Document key decisions and approaches
+- Include basic unit tests for core functionality
+{% elif target_maturity_level == 3 -%}
+- Apply SOLID principles and design patterns
+- Comprehensive documentation and tests
+- Code reviews and quality checks required
+{% else -%}
+- Enterprise-grade code with full documentation
+- Comprehensive test suites (unit, integration, e2e)
+- Performance profiling and optimization
+- Security auditing and compliance validation
+{% endif %}
+
+## Guidelines for AI Assistance
+
+1. **Context First**: Always review relevant documentation before making suggestions
+2. **Consistency**: Follow established patterns in the codebase
+3. **Documentation**: Update docs when making significant changes
+4. **Testing**: {% if target_maturity_level >= 3 %}Include tests with all new features{% elif target_maturity_level == 2 %}Add tests for critical paths{% else %}Test manually as needed{% endif %}
+5. **Communication**: Adapt explanations to user's proficiency level
+6. **Quality**: Align code quality with the target maturity level
+
+---
+
+*This file is automatically generated based on workspace parameters. Sections may be updated when workspace settings change.*
